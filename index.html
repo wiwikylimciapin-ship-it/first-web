@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daynest</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="kartu">
+    <div id="halaman-sambutan" class="page">
+
+      <div class="welcome-atas">
+        <div class="welcome-kucing">🐱</div>
+      
+      </div>
+
+      <div class="welcome-bawah">
+      <div class="welcome-judul">Daynest 🌿</div>
+      <div class="welcome-sub">Organisir harimu dengan mudah & cute</div>
+      <input id="inputNama" type="text" placeholder="Siapa namamu?" class="input-jarak">
+      <button onclick="mulai()">Mulai Harimu</button>
+
+       </div>
+
+    </div>
+
+    <div id="halaman-utama" class="page" >
+      <div id="tab-home" class="konten-tab">
+        <div class="header">
+          <div class="header-top">
+            <div>
+              <div class="header-nama" id="sapaanNama">Halo! 👋</div>
+              <div class="header-tanggal" id="tanggalHari"></div>
+            </div>
+            <div class="header-kanan">
+              <div class="header-kucing">🐱</div>
+              <button onclick="toggleDarkMode()" id="btnDark" class="btn-dark-toggle">🌙 Dark</button>
+            </div>
+          </div>                  
+          <div id="quotesHari" class="quotes-Hari"></div>
+        </div>
+       
+
+       <div class="progress-wrap">
+        <div class="progress-header">
+          <span class="progress-label">Progress Hari Ini</span>
+          <span id="statusTugas" class="status-tugas-teks"></span>
+        </div>
+        <div class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
+       </div>
+       </div>
+
+       <div class="mood-wrap mood-wrap-ringkas">
+        <div class="mood-label">🌤️ Mood?</div>
+        <div class="mood-pilihan">
+          <button onclick="pilihMood('😊')" id="mood-senang" class="mood-btn">😊</button>
+          <button onclick="pilihMood('😐')" id="mood-netral" class="mood-btn">😐</button>
+          <button onclick="pilihMood('😔')" id="mood-sedih" class="mood-btn">😔</button> 
+        </div>
+        <div id="moodTerpilih" class="mood-terpilih"></div>
+       </div>
+
+
+       <div class="tugas-wrap">
+       <div class="tugas-header">
+        <div class="stat-label">📋 Daftar Tugas</div> 
+        <button id="btnModePilih" onclick="toggleModePilih()" class="btn-mode-pilih">☑️ Pilih</button>
+        </div> 
+        <div id="batchAction" class="batch-action-row" >
+          <button onclick="batchSelesai()" class="btn-primary btn-batch">✓ Selesaikan</button>
+          <button onclick="batchHapus()" class="btn-danger btn-batch">🗑️ Hapus</button>
+          <button onclick="batchBatalPilih()" class="btn-ghost btn-batch">Batal</button>
+        </div>
+
+        <div class="input-tugas-wrap">
+          <input id="inputTugas" type="text" placeholder="Tugas baru...." class="flex-1">
+          <button onclick="tambahTugas()" class="btn-tambah-tugas">+</button>
+        </div>
+
+        <div class="tugas-opsi-wrap">
+          <select id="prioritasTugas" class="select-tugas">
+            <option value="rendah">🟢 Rendah</option>
+            <option value="sedang">🟡 Sedang</option>
+            <option value="tinggi">🔴 Tinggi</option>
+          </select>
+          <select id="kategoriTugas" class="select-tugas">
+            <option value="umum">📋 Umum</option>
+            <option value="kerja">💼 Kerja</option>
+            <option value="belajar">📚 Belajar</option>
+            <option value="rumah">🏠 Rumah</option>
+            <option value="personal">🎯 Personal</option>
+          </select>
+          <input id="deadlineTugas" type="date" class="select-tugas">
+        </div>
+
+        <button onclick="toggleFilterPanel()" id="btnToggleFilter" class="btn-ghost btn-toggle-filter">🔍 Filter & Urutkan</button>
+
+        <div id="filterPanel" class="filter-panel">
+          <div class="seacrh-wrap">
+            <input id="searchTugas" type="text" placeholder="🔍 Cari tugas..." oninput="tampilkanDaftarTugas()" class="search-tugas">
+          </div>
+        </div>
+
+        <div class="sort-wrap">
+          <select id="sortTugas" onchange="tampilkanDaftarTugas()" class="select-tugas">
+            <option value="default">📋 Urutan Default</option>
+            <option value="prioritas">🔴 Prioritas</option>
+            <option value="deadline">📅 Deadline</option>
+            <option value="dibuat">🕐 Terbaru</option>
+          </select>
+        </div>
+        <select id="filterStatus" onchange="setFilter(this.value)" class="select-tugas">
+          <option value="semua">Semua Status</option>
+          <option value="aktif">Aktif</option>
+          <option value="selesai">Selesai</option>
+          <option value="terlambat">terlambat</option>
+        </select>
+       <div class="kategori-wrap">
+          <button onclick="setKategori('semua')" id="kat-semua" class="btn-pill btn-pill-sm aktif">Semua</button>
+          <button onclick="setKategori('kerja')" id="kat-kerja" class="btn-pill btn-pill-sm">💼 Kerja</button>
+          <button onclick="setKategori('belajar')" id="kat-belajar" class="btn-pill btn-pill-sm">📚 Belajar</button>
+          <button onclick="setKategori('rumah')" id="kat-rumah" class="btn-pill btn-pill-sm">🏠 Rumah</button>
+          <button onclick="setKategori('personal')" id="kat-personal" class="btn-pill btn-pill-sm">🎯 Personal</button>
+       </div>
+       </div>
+       <div id="daftarTugas"></div>
+      </div>
+
+        
+     
+     <div id="tab-kalender" class="konten-tab" >
+      <div class="header">
+          <div class="header-top">
+            <div>
+              <div class="header-nama">Kalender 📅</div>
+              <div class="header-tanggal">Project Harian mu</div>
+            </div>
+            <div class="header-kucing">📅</div>
+          </div>
+        </div>
+
+      <div class="kalender-wrap">
+        <div class="kal-header">
+          <button class="kal-nav" onclick="gantiBulan(-1)">‹</button>
+          <div class="kal-bulan" id="judulBulan"></div>
+          <button class="kal-nav" onclick="gantiBulan(1)">›</button>
+        </div>
+         <div class="kal-grid" id="kalGrid"></div>
+      </div>
+     </div>
+
+    <div id="tab-statistik" class="konten-tab" >     
+     <div class="header">
+      <div class="header-top">
+        <div>
+          <div class="header-nama">Statistikmu 📊</div>
+          <div class="header-tanggal">Perjalanan produktifmu</div>
+        </div>
+        <div class="header-kucing">🏆</div>
+      </div>
+    </div>
+    
+    <div class="stat-wrap">
+      <div class="stat-grid">
+        <div class="stat-card">
+          <h2 id="stat-total" class="stat-angka">0</h2>
+          <p class="stat-ket">Total Tugas</p>
+        </div>
+        <div class="stat-card">
+          <h2 id="stat-selesai" class="stat-angka">0</h2>
+          <p class="stat-ket">Selesai</p>
+        </div>
+        <div class="stat-card">
+          <h2 id="stat-belum" class="stat-angka">0</h2>
+          <p class="stat-ket">Belum Selesai</p>
+        </div>
+        <div class="stat-card">
+          <h2 id="stat-pct" class="stat-angka">0%</h2>
+          <p class="stat-ket">Completion</p>
+        </div>
+        <div class="stat-minggu">
+          <div class="tugas-header-label">📈 Progress Minggu Ini</div>
+          <div id="chartMinggu"></div>
+        </div>
+      </div>
+      <div class="mood-riwayat-wrap">
+        <div class="tugas-header-label">🌤️ Mood 7 Hari Terakhir</div>
+        <div id="moodRiwayat" class="mood-riwayatt-grid"></div>
+      </div>
+      <div class="export-wrap">
+        <button onclick="exportPDF()" class="btn-export-pdf">📄 Export PDF Statistik</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-jurnal" class="konten-tab">
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <div class="header-nama">Jurnal📝</div>
+          <div class="header-tanggal" id="jurnalTanggal"></div>
+        </div>
+        <div class="header-kucing">📝</div>
+      </div>
+    </div>
+
+    <div class="jurnal-wrap">
+      <div class="jurnal-toolbar">
+        <button onclick="formatJurnal('bold')" class="jurnal-tool"><b>B</b></button>
+        <button onclick="formatJurnal('italic')" class="jurnal-tool"><i>I</i></button>
+        <button onclick="formatJurnal('insertUnorderedList')" class="jurnal-tool">• List</button>        
+      </div>
+      <div id="jurnalEditor" class="jurnal-editor" contenteditable="true" placeholder="Tulis jurnalmu hari ini..."></div>
+      <div class="jurnal-actions">
+        <button onclick="simpanJurnal()" class="btn-simpan-jurnal">💾 Simpan</button>
+      </div>
+    </div>
+
+    <div class="jurnal-riwayat-wrap">
+      <div class="tugas-header-label">📚 Jurnal Sebelumnya</div>
+      <div id="jurnalRiwayat"></div>
+    </div>
+  </div>
+
+  <div id="tab-habit" class="konten-tab">
+    <div class="header">
+      <div class="header-top">
+        <div>
+          <div class="header-nama">Habit Tracker 🌱</div>
+          <div class="header-tanggal">Kebiasaan harianmu</div>
+        </div>
+        <div class="header-kucing">🌱</div>
+      </div>
+    </div>
+  
+
+  <div class="habit-input-wrap">
+    <input id="inputHabit" type="text" placeholder="Kebiasaan baru...">
+    <button onclick="tambahHabit()" class="btn-tambah-habit">+</button>
+  </div>
+
+   <div id="daftarHabit" class="daftar-habit"></div>
+  </div>
+
+    
+
+     <div id="tab-profil" class="konten-tab" >
+     <div class="header">
+      <div class="header-top">
+        <div>
+          <div class="header-nama" id="profilNama">Profil</div>
+          <div class="header-tanggal">Pengaturan akun</div>
+        </div>
+        <div class="header-kucing">🌿</div>
+      </div>
+     </div>
+     <div class="profil-konten">
+      <div class="profil-card">
+        <p class="profil-card-label">📊 STATISTIK KAMU</p>
+        <div id="levelUser" class="profil-stat-item">⭐ Level: Pemula 🐣</div>
+        <div id="streakDisplay" class="profil-stat-item">🔥 Streak: 0 hari</div>
+      </div>
+     </div>
+     <div class="profil-konten">
+      <div class="profil-card">
+        <p class="profil-card-label">GANTI NAMA</p>
+        <input id="inputNamaBaru" type="text" placeholder="NamaBaru..." class="input-jarak">
+        <button onclick="gantiNama()">Simpan Nama</button>
+        <button onclick="toggleNotifikasi()" id="btnNotifikasi" class="btn-notif">🔔 Aktifkan Notifikasi</button>
+      </div>
+      <div class="profil-card">
+        <p class="profil-card-danger-label">ZONA BAHAYA</p>
+        <button onclick="resetData()" class="btn-danger-outline">⚠️ Reset Semua Data</button>
+      </div>
+      <div class="profil-card">
+        <p class="profil-card-label">🎨 PILIH TEMA</p>
+        <div class="tema-grid">
+          <button onclick="pilihTema('default')" class="tema-btn" id="tema-default">
+            <div class="tema-preview tema-preview-default"></div>
+            <span>Coklat</span>
+          </button>
+          <button onclick="pilihTema('biru')" class="tema-btn" id="tema-biru">
+            <div class="tema-preview tema-preview-biru"></div>
+            <span>Biru</span>
+          </button>
+          <button onclick="pilihTema('hijau')" class="tema-btn" id="tema-hijau">
+            <div class="tema-preview tema-preview-hijau"></div>
+            <span>Hijau</span>
+          </button>
+          <button onclick="pilihTema('ungu')" class="tema-btn" id="tema-ungu">
+            <div class="tema-preview tema-preview-ungu"></div>
+            <span>Ungu</span>
+          </button>
+        </div>
+      </div>
+     </div>
+   </div>
+   
+  <div id="modalEdit" class="modal-overlay">
+    <div class="modal-box">
+      <h2 class="modal-judul">✏️ Edit Tugas</h2>
+      <p class="modal-subjudul">Ubah teks tugas kamu di bawah ini</p>
+      <input id="inputEditTugas" type="text" placeholder="Tugas Baru...">
+      <div class="modal-actions">
+        <button onclick="tutupModal()" class="btn-modal-batal">Batal</button>
+        <button onclick="simpanEdit()" class="flex-1">Simpan</button>
+      </div>
+    </div>
+  </div>
+
+   <div id="modalTanggal" class="modal-overlay">
+    <div class="modal-hapus-box">
+      <div class="modal-hapus-icon">📅</div>
+      <h2 id="modalTanggalJudul" class="modal-hapus-title"></h2>
+      <div id="modalTanggalIsi" class="modal-scroll-area"></div>
+      <button onclick="tutupModalTanggal()">Tutup</button>
+     </div>
+    </div>
+
+  <div id="modalHapus" class="modal-overlay">
+    <div class="modal-hapus-box">
+      <div class="modal-hapus-icon">🗑️</div>
+      <h2 class="modal-judul">Hapus Tugas?</h2>
+      <p class="modal-subjudul-lg">Tugas ini akan dihapus permanen dan tidak bisa dikembalikan. </p>
+      <div class="modal-hapus-actions">
+        <button onclick="tutupModalHapus()" class="btn-modal-batal">Batal</button>
+        <button onclick="konfirmasiHapus()" class="btn-danger flex-1">Hapus</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+    <div class="bottom-nav">
+      <button id="btn-home" onclick="pindahTab('home')" >🏠<br>Home</button>
+      <button id="btn-kalender" onclick="pindahTab('kalender')" >📅<br>Kalender</button>
+      <button id="btn-statistik" onclick="pindahTab('statistik')" >📊<br>Stat</button>
+      <button id="btn-habit" onclick="pindahTab('habit')">🌱<br>Habit</button>
+      <button id="btn-jurnal" onclick="pindahTab('jurnal')">📝<br>Jurnal</button>
+      <button id ="btn-profil" onclick="pindahTab('profil')">⚙️<br>Profil</button>
+     </div>
+
+     <div id="overlayOnboarding">
+      <div class="onboarding-box">
+        <div class="onboarding-kucing">🐱</div>
+        <h2 class="onboarding-judul">Halo, selamat datang</h2>
+        <p class="onboarding-sub">
+          Tambah tugasmu di bawah, cek progress di header, dan jelajahi tab kalender & Staistik ya!
+        </p>
+        <button onclick="tutupOnboarding()"> siap! 🌿</button>
+      </div>
+     </div>
+
+     <div id="pomodoroBtn" onclick="togglePomodoro()" class="pomodoro-fab">🍅</div>
+
+     <div id="pomodoroPanel" class="pomodoro-panel">
+      <div class="pomodoro-header">
+        <span id="pomodoroMode">🍅 Work Time</span>
+        <button onclick="togglePomodoro()" class="pomodoro-close">✕</button>
+      </div>
+      <div id="pomodoroTimer" class="pomodoro-time">25:00</div>
+      <div class="pomodoro-actions">
+        <button onclick="pomodoroStart()" id="btnPomStart" class="pom-btn-start">▶ Start</button>
+        <button onclick="pomodoroReset()" class="pom-btn-reset">↺ Reset</button>
+      </div>
+      <div class="pomodoro-toggle">
+        <button onclick="setPomodoroMode('work')" id="pom-work" class="pom-mode aktif-mode">Work 25m</button>
+        <button onclick="setPomodoroMode('break')" id="pom-break" class="pom-mode">Break 5m</button>
+      </div>
+     </div>
+
+
+   <div id="toast" class="toast"></div>
+
+   <button id="btnScrollTop" onclick="scrollKeAtas()">↑</button>
+
+   </div>
+
+      <script src="script.js"></script>
+
+</body>
+</html>
+
